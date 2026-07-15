@@ -1,0 +1,111 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+generator client {
+  provider = "prisma-client"
+  output   = "../src/generated/prisma"
+}
+
+datasource db {
+  provider = "postgresql"
+}
+
+// ── Catalog ───────────────────────────────────────────────
+// 아무것도 의존하지 않음(최하위 컨텍스트). searchFragrances()가
+// AI 도구가 호출하는 유일한 진입점 — 다른 컨텍스트는 이 모델을
+// 직접 쿼리하지 않고 catalogService를 통해서만 읽는다.
+model Fragrance {
+  id         String @id @default(cuid())
+  externalId String @unique // 리테일러 피드 SKU — 동기화 upsert 키
+
+  name   String
+  brand  String
+  gender String // "MALE" | "FEMALE" | "UNISEX"
+
+  family       String // "우디" | "시트러스" | "플로럴" 등 — enum 대신 문자열(값이 계속 늘어남)
+  moodTags     String[] // ["은은한", "포근한"] 등 다중
+  occasionTags String[] // ["데이트", "오피스", "여름"] 등 다중
+  longevity    String // "낮음" | "중간" | "높음"
+  sillage      String // 확산력, 동일 스케일
+
+  price          Int // KRW, 동기화 때마다 최신가로 갱신
+  imageUrl       String
+  affiliateUrl   String
+  disclosureText String // 제휴 프로그램별 고지 문구
+
+  discontinued Boolean @default(false) // 피드에서 사라지면 true(완전 삭제 X — Recommendation 스냅샷 참조 무결성)
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  recommendations Recommendation[]
+
+  @@index([discontinued])
+}
+
+// ── Conversation ──────────────────────────────────────────
+// Catalog를 읽고 Recommendation을 쓴다. Conversion은 절대 모른다(의존 방향 위반 금지).
+model Conversation {
+  id        String  @id @default(cuid())
+  sessionId String // 비로그인 익명 세션 쿠키값
+  userId    String? // 로그인 붙기 전까지 nullable
+
+  messages        Message[]
+  recommendations Recommendation[]
+
+  createdAt DateTime @default(now())
+
+  @@index([sessionId])
+}
+
+model Message {
+  id             String       @id @default(cuid())
+  conversationId String
+  conversation   Conversation @relation(fields: [conversationId], references: [id])
+
+  role  String // "user" | "assistant" — AI SDK 역할과 그대로 맞춤
+  parts Json // AI SDK UIMessage parts 원본 그대로 저장 — 히스토리 재로드 시 그대로 복원
+
+  createdAt DateTime @default(now())
+
+  @@index([conversationId])
+}
+
+// ── Recommendation ────────────────────────────────────────
+// Conversation과 Catalog를 잇는 다리. fragranceSnapshotJson과 disclosure는
+// 필수 — 카탈로그가 나중에 바뀌어도 사용자가 그 순간 본 화면을 그대로 재현한다.
+model Recommendation {
+  id String @id @default(cuid())
+
+  conversationId String
+  conversation   Conversation @relation(fields: [conversationId], references: [id])
+
+  messageId String // 이 추천을 만든 assistant 메시지 id
+
+  fragranceId String
+  fragrance   Fragrance @relation(fields: [fragranceId], references: [id])
+
+  fragranceSnapshotJson Json // 추천 시점 카탈로그 스냅샷(가드레일 통과 후 확정된 데이터)
+  disclosure            String // 필수 — 제휴 고지
+
+  reasonText String // 모델이 이 향수를 추천한 이유
+
+  createdAt DateTime @default(now())
+
+  clickEvents ClickEvent[]
+
+  @@index([conversationId])
+  @@index([fragranceId])
+}
+
+// ── Conversion/Affiliate ──────────────────────────────────
+// 가장 얇게 유지 — 클릭 이벤트 로그 하나뿐. MVP 성공 지표의 원천 데이터.
+model ClickEvent {
+  id               String         @id @default(cuid())
+  recommendationId String
+  recommendation   Recommendation @relation(fields: [recommendationId], references: [id])
+
+  clickedAt DateTime @default(now())
+
+  @@index([recommendationId])
+}

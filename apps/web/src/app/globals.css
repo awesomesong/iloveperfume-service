@@ -1,26 +1,40 @@
 @import "tailwindcss";
 
+/*
+ * 원시(primitive) 팔레트만 정의한다 — 색 자체를 설명하는 이름이고,
+ * UI 역할(primary/secondary/background 등)은 아직 안 정한다.
+ * 실제 컴포넌트를 만들 때(채팅 UI 작업) 이 팔레트에서 골라
+ * 의미 토큰(--color-primary 등)으로 매핑한다. 다크모드도 그때 같이 정한다.
+ */
 :root {
-  --background: #ffffff;
-  --foreground: #171717;
+  --mist: #f5f2fa;
+  --glass: #ffffff;
+  --charcoal: #141414;
+  --charcoal-muted: #6b6670;
+  --periwinkle: #cfc7f2;
+  --butter: #f5e2b8;
+  --coral: #f0827d;
 }
 
 @theme inline {
-  --color-background: var(--background);
-  --color-foreground: var(--foreground);
-  --font-sans: var(--font-geist-sans);
-  --font-mono: var(--font-geist-mono);
+  --color-mist: var(--mist);
+  --color-glass: var(--glass);
+  --color-charcoal: var(--charcoal);
+  --color-charcoal-muted: var(--charcoal-muted);
+  --color-periwinkle: var(--periwinkle);
+  --color-butter: var(--butter);
+  --color-coral: var(--coral);
+  --font-sans: var(--font-pretendard);
 }
 
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
-  }
-}
+/*
+ * 타이포 크기·스페이싱은 Tailwind v4 기본 스케일을 그대로 쓴다
+ * (4px 기준 스페이싱, text-xs~text-9xl 크기 스케일 — 이미 검증된 체계라
+ * 재정의하지 않음). 헤딩·본문 등 역할별 크기 배정은 채팅 UI 작업 때 정한다.
+ */
 
 body {
-  background: var(--background);
-  color: var(--foreground);
-  font-family: Arial, Helvetica, sans-serif;
+  background: var(--mist);
+  color: var(--charcoal);
+  font-family: var(--font-sans), system-ui, sans-serif;
 }

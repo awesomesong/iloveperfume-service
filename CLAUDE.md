@@ -14,7 +14,9 @@ apps/web        Next.js 16 앱 (Vercel). 지금은 이것 하나뿐.
 
 pnpm workspace만 쓰고 packages/는 미리 쪼개지 않는다 (ADR-0000). apps/realtime(Fly.io)은 WebSocket 지속 연결이 실제로 필요한 기능이 생겼을 때만, 새 ADR과 함께 추가한다.
 
-## 도메인 경계 — 반드시 지킬 규칙
+## 도메인 경계(Bounded Context) — 반드시 지킬 규칙
+
+MSA로 쪼갠 게 아니라 모듈러 모놀리스(Modular Monolith)다 — 배포는 앱 하나, DB도 하나지만, 컨텍스트 간 데이터 접근은 반드시 아래 서비스 모듈을 거치게 한다.
 
 ```
 Catalog ← Recommendation ← Conversation

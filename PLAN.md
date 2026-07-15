@@ -25,7 +25,7 @@
 
 ---
 
-## 2. 도메인 모델 — 4개 경계
+## 2. 도메인 모델 — 4개 경계(Bounded Context)
 
 ```
 Catalog ← Recommendation ← Conversation

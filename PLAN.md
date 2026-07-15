@@ -79,6 +79,8 @@ Catalog ← Recommendation ← Conversation
 
 칸반, 동시 진행 1개 제한. 아래 체크리스트를 순서대로, 하나 끝나면 검증하고 다음으로.
 
+**협업 플로우: GitHub Flow.** 체크리스트 항목마다 이슈 생성 → 그 이슈 번호로 브랜치(`n-slug`, 예: `2-design-system`) → 작업 → PR 생성(이슈 연결, `Closes #n`) → 리뷰 확인 후 main에 머지 → 이슈 자동 종료. main은 항상 배포 가능한 상태를 유지하고 직접 커밋하지 않는다(리포 골격처럼 이 규칙 자체를 만들기 전 커밋된 것은 예외).
+
 1. pnpm workspace 골격(apps/web) + CLAUDE.md + ADR-0000 파일화
 2. 디자인시스템 신규 설계 — 색상·타이포·스페이싱 토큰부터(기존 화면 참고 안 함)
 3. Prisma 스키마(4개 컨텍스트) → migrate dev

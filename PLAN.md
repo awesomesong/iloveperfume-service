@@ -16,7 +16,9 @@
 | 저장소 구조 | apps/web(Vercel) 단일 앱으로 시작, pnpm workspace만, packages 미리 안 쪼갬 | MVP 핵심 흐름(스트리밍 응답)은 SSE로 충분 — Next.js API route가 처리. WebSocket 지속연결이 필요한 기능(여러 사용자 간 실시간 상태 공유 등)이 실제로 생기면 그때 apps/realtime(Fly.io)을 새 ADR로 추가한다 |
 | 프레임워크 | Next.js 16 | 파셜 프리렌더링이 "정적 상품정보+AI 실시간 추천" 조합에 적합. Medusa.js(카트·결제 강점, 이 프로젝트엔 불필요)·Astro(정적 콘텐츠용, 실시간 채팅엔 부적합) 기각 |
 | DB/ORM | Prisma 7 | Rust→TS/WASM 재작성으로 서버리스 콜드스타트 약점 해소, Drizzle 전환 이득 없음 |
+| 카탈로그 검색 방식 | 벡터DB/RAG 없이 Prisma 구조화 필터(mood/occasion/family 태그)만 | 카탈로그를 새로 구축하는 만큼 자연어 질의에 맞는 태그로 처음부터 설계 가능 — 벡터 인프라 불필요 |
 | 인증 | Better Auth | NextAuth는 2025.09부로 보안패치만 하는 유지보수 모드 |
+| 로그인 정책 | 완전 비로그인 허용(Conversation은 sessionId 기반, userId nullable) | 가설 검증(추천→클릭)에 로그인 불필요 — 진입장벽 최소화 |
 | AI 스트리밍 | Vercel AI SDK(streamText+tool()) | 수동 SSE 파싱 대체, tool calling·관측성 내장 |
 | UI 컴포넌트 | HeroUI | shadcn/ui 기반인 Radix UI가 유지보수 중단 상태 — React Aria 기반인 HeroUI가 더 안전 |
 | 디자인시스템(토큰·룩앤필) | 완전 신규 설계 | 기존 문서는 기술적으로 꼼꼼하지만(WCAG 검증 완료) 실제 화면 품질은 확인 안 됨 → 화면 재사용 없이 새로 설계 |
@@ -55,6 +57,8 @@ Catalog ← Recommendation ← Conversation
 
 응답에 disclosure 필드는 제휴링크가 있는 모든 추천에 타입 레벨로 필수.
 
+클릭 시 제휴 링크는 새 탭에서 연다 — 대화 세션이 유지돼 한 세션에서 여러 향수를 비교·클릭할 수 있다.
+
 ---
 
 ## 4. 테스트 전략
@@ -89,7 +93,7 @@ Catalog ← Recommendation ← Conversation
 6. AI SDK tool 정의 + 환각 방지 가드레일
 7. POST /messages 라우트(streamText+onFinish)
 8. POST /click 라우트
-9. 채팅 UI + 추천 카드 + 고지 배지
+9. 채팅 UI + 추천 카드 + 고지 배지 + 음성 입력
 10. Redis 레이트리밋 + Sentry + Uptime 체크 + CI 게이트
 
 검증: 1~4 후 pnpm dev 기동 확인 → 7~8 후 실제 대화 1턴으로 DB row 생성 확인 → 9 후 브라우저 E2E 1회 → 6의 가드레일은 빈 검색 결과 케이스로 1회 수동 재현.
@@ -100,6 +104,7 @@ Catalog ← Recommendation ← Conversation
 
 1. 저장소 위치: 로컬 폴더 먼저(예: iloveperfume-service) → GitHub은 그 다음 (추천)
 2. MVP 성공 지표: 제휴링크 클릭 전환율을 1순위로 추천 — 도메인 설계가 이미 이걸 중심으로 돼 있어 추가 계측 비용 없음
+3. 카탈로그 제휴 리테일러 — 대량 상품 피드(CPS 네트워크 등)를 주는 곳인지에 따라 카탈로그 동기화 방식이 갈림. 정해지기 전까지는 수동 구축으로 시작 가능
 
 ---
 

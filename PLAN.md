@@ -20,6 +20,7 @@
 | 인증 | Better Auth | NextAuth는 2025.09부로 보안패치만 하는 유지보수 모드 |
 | 로그인 정책 | 완전 비로그인 허용(Conversation은 sessionId 기반, userId nullable) | 가설 검증(추천→클릭)에 로그인 불필요 — 진입장벽 최소화 |
 | AI 스트리밍 | Vercel AI SDK(streamText+tool()) | 수동 SSE 파싱 대체, tool calling·관측성 내장 |
+| LLM 프로바이더 | Claude/GPT/Gemini 3개, 대화당 무작위 배정 + 첫 토큰 전 폴백 (ADR-0001) | 클릭 전환율을 프로바이더별로 비교하고, 배정된 프로바이더가 첫 응답 전에 실패하면 무중단 전환 |
 | UI 컴포넌트 | HeroUI | shadcn/ui 기반인 Radix UI가 유지보수 중단 상태 — React Aria 기반인 HeroUI가 더 안전 |
 | 디자인시스템(토큰·룩앤필) | 완전 신규 설계 | 기존 문서는 기술적으로 꼼꼼하지만(WCAG 검증 완료) 실제 화면 품질은 확인 안 됨 → 화면 재사용 없이 새로 설계 |
 | 인프라 | Upstash Redis(레이트리밋) / Sentry(에러) / Langfuse(LLM 로그) / Uptime 체크 | 기존 in-memory 레이트리밋은 서버리스 다중 인스턴스에서 안 먹힘 |

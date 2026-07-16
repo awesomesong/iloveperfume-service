@@ -1,7 +1,7 @@
 import { randomUUID } from "node:crypto";
 import { NextResponse } from "next/server";
 import { z } from "zod";
-import { convertToModelMessages, streamText } from "ai";
+import { convertToModelMessages, stepCountIs, streamText } from "ai";
 import { prisma } from "@/lib/prisma";
 import type { Prisma } from "@/generated/prisma/client";
 import {
@@ -85,6 +85,9 @@ export async function POST(
       system: SYSTEM_PROMPT,
       messages: modelMessages,
       tools,
+      // 기본값(1스텝)이면 searchFragrances 결과를 본 뒤 recommendFragrance를 호출하거나
+      // 텍스트로 답할 기회 자체가 없다 — 검색→추천 확정까지 이어지도록 여유를 둔다.
+      stopWhen: stepCountIs(5),
       onFinish: async (event) => {
         const searchResults: SearchFragrancesToolResult[] = [];
         let recommendCall: { fragranceId: string; reasonText: string } | undefined;

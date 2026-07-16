@@ -4,6 +4,9 @@ settings:
   autoInstallPeers: true
   excludeLinksFromLockfile: false
 
+overrides:
+  '@ai-sdk/provider-utils': 5.0.9
+
 importers:
 
   .: {}
@@ -103,12 +106,6 @@ packages:
 
   '@ai-sdk/openai@4.0.14':
     resolution: {integrity: sha512-MnwhHrPOyFYvnOV5p0Iwxwuxnn0/hQbG3rXAyRAsYqfFTrzHJRU2p7BQtKX2PZWH+59iBYBFA2n4GFYC3KEK+g==}
-    engines: {node: '>=22'}
-    peerDependencies:
-      zod: ^3.25.76 || ^4.1.8
-
-  '@ai-sdk/provider-utils@5.0.10':
-    resolution: {integrity: sha512-uPyec0+85dwxZYXtb8qe8gCjhjDfxP4LCDo/uRQS/iG+FIgYbHPRhr/ys281udG90bTaE18+5cxWraYaf8oHCw==}
     engines: {node: '>=22'}
     peerDependencies:
       zod: ^3.25.76 || ^4.1.8
@@ -2810,7 +2807,7 @@ snapshots:
   '@ai-sdk/anthropic@4.0.15(zod@4.4.3)':
     dependencies:
       '@ai-sdk/provider': 4.0.3
-      '@ai-sdk/provider-utils': 5.0.10(zod@4.4.3)
+      '@ai-sdk/provider-utils': 5.0.9(zod@4.4.3)
       zod: 4.4.3
 
   '@ai-sdk/gateway@4.0.19(zod@4.4.3)':
@@ -2823,21 +2820,13 @@ snapshots:
   '@ai-sdk/google@4.0.16(zod@4.4.3)':
     dependencies:
       '@ai-sdk/provider': 4.0.3
-      '@ai-sdk/provider-utils': 5.0.10(zod@4.4.3)
+      '@ai-sdk/provider-utils': 5.0.9(zod@4.4.3)
       zod: 4.4.3
 
   '@ai-sdk/openai@4.0.14(zod@4.4.3)':
     dependencies:
       '@ai-sdk/provider': 4.0.3
-      '@ai-sdk/provider-utils': 5.0.10(zod@4.4.3)
-      zod: 4.4.3
-
-  '@ai-sdk/provider-utils@5.0.10(zod@4.4.3)':
-    dependencies:
-      '@ai-sdk/provider': 4.0.3
-      '@standard-schema/spec': 1.1.0
-      '@workflow/serde': 4.1.0
-      eventsource-parser: 3.1.0
+      '@ai-sdk/provider-utils': 5.0.9(zod@4.4.3)
       zod: 4.4.3
 
   '@ai-sdk/provider-utils@5.0.9(zod@4.4.3)':

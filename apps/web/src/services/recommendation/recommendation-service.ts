@@ -1,3 +1,4 @@
+import { prisma } from "@/lib/prisma";
 import type { catalogService } from "@/services/catalog/catalog-service";
 
 type Fragrance = Awaited<ReturnType<typeof catalogService.searchFragrances>>[number];
@@ -24,6 +25,35 @@ function verifyRecommendedFragrance(
   return fragrance ? { verified: true, fragrance } : { verified: false };
 }
 
+export type CreateRecommendationInput = {
+  conversationId: string;
+  messageId: string;
+  fragrance: Fragrance;
+  reasonText: string;
+  modelProvider: string;
+  modelId: string;
+};
+
+// fragranceSnapshotJson은 가드레일을 통과한 시점의 fragrance 객체를 그대로 저장한다 —
+// 카탈로그가 나중에 바뀌어도 사용자가 그 순간 본 화면을 재현하기 위함(CLAUDE.md 도메인 규칙).
+async function createRecommendation(input: CreateRecommendationInput) {
+  const { conversationId, messageId, fragrance, reasonText, modelProvider, modelId } = input;
+
+  return prisma.recommendation.create({
+    data: {
+      conversationId,
+      messageId,
+      fragranceId: fragrance.id,
+      fragranceSnapshotJson: fragrance,
+      disclosure: fragrance.disclosureText,
+      reasonText,
+      modelProvider,
+      modelId,
+    },
+  });
+}
+
 export const recommendationService = {
   verifyRecommendedFragrance,
+  createRecommendation,
 };

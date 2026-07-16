@@ -50,6 +50,8 @@ model Conversation {
   sessionId String // 비로그인 익명 세션 쿠키값
   userId    String? // 로그인 붙기 전까지 nullable
 
+  assignedProvider String // "anthropic" | "openai" | "google" — 생성 시 무작위 배정, 대화 내내 고정(ADR-0001, 프로바이더별 클릭 전환율 비교 표본이 섞이지 않게)
+
   messages        Message[]
   recommendations Recommendation[]
 
@@ -89,6 +91,9 @@ model Recommendation {
   disclosure            String // 필수 — 제휴 고지
 
   reasonText String // 모델이 이 향수를 추천한 이유
+
+  modelProvider String // 실제로 이 추천을 생성한 프로바이더("anthropic" 등) — 폴백 시 assignedProvider와 달라질 수 있어 비교 지표 정확도를 위해 별도 기록(ADR-0001)
+  modelId       String // 실제 모델 id(예: "claude-sonnet-5")
 
   createdAt DateTime @default(now())
 

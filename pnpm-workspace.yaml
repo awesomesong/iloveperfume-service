@@ -1,6 +1,13 @@
 packages:
   - "apps/*"
 
+# ai@7.0.26이 @ai-sdk/provider-utils를 5.0.9로 정확히 고정하는데, @ai-sdk/openai 등
+# 프로바이더 패키지는 5.0.10을 요구해 두 버전이 같이 설치됐다. ai 코어의 메시지 스키마
+# 검증기(5.0.9)와 프로바이더가 실제로 만드는 tool-call/tool-result 모양(5.0.10)이 달라
+# 멀티스텝 도구 호출 2번째 스텝에서 AI_InvalidPromptError가 났다 — 하나로 통일해서 해결.
+overrides:
+  "@ai-sdk/provider-utils": "5.0.9"
+
 allowBuilds:
   '@prisma/engines': true
   prisma: true
